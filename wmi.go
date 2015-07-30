@@ -332,6 +332,17 @@ func (c *Client) loadEntity(dst interface{}, src *ole.IDispatch) (errFieldMismat
 					Reason:     "not a bool",
 				}
 			}
+		case nil:
+			switch f.Kind() {
+			case reflect.String:
+				f.SetString("")
+			default:
+				return &ErrFieldMismatch{
+					StructType: of.Type(),
+					FieldName:  n,
+					Reason:     fmt.Sprintf("unsupported type (%T) for 'nil'", val),
+				}
+			}
 		default:
 			typeof := reflect.TypeOf(val)
 			if typeof == nil && (isPtr || c.NonePtrZero) {
